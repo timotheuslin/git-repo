@@ -109,7 +109,7 @@ def _SelectPager(globalConfig):
   except KeyError:
     pass
 
-  return 'less' if not platform_utils.isWindows() else 'more'
+  return 'less' if not platform_utils.isWindows() else ''
 
 
 def _BecomePager(pager):
