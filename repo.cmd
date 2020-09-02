@@ -12,5 +12,5 @@
 :: See the License for the specific language governing permissions and
 :: limitations under the License.
 
-@%windir%\system32\net.exe session 1>NUL 2>NUL || (Echo Error: Repo requires elevated admin rights. Run Repo in the admin command prompt. & EXIT /b 1)
-py -3 %~dp0\repo %*
+::@%windir%\system32\net.exe session 1>NUL 2>NUL || (Echo Error: Repo requires elevated admin rights. Run Repo in the admin command prompt. & EXIT /b 1)
+py -3 %~dp0\repo_win32.py %~dp0\repo %*
