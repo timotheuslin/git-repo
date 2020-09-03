@@ -7,7 +7,8 @@ Only Windows 10 is supported and tested.
 
 * Open the Start Menu (i.e. press the ⊞ key).
 * Type cmd to select "Command Prompt"
-* Right click it and select "**Run as administrator**".
+* ~~Right click it and select "**Run as administrator**".~~
+* Git-Repo.Win32 would elevate the UAC as adim inside the script automaticlly.
 * Run repo.cmd with its full path under your designated pull folder.
     * e.g. C:\foo\bar> c:\git-repo\repo.cmd ...
 * You may consider adding this git-repo's source direcotry to your **PATH** environment variable. Then you can invoke Repo without the leading directory path.
@@ -19,7 +20,8 @@ If you have Git Bash which comes with the Git installation, you can launch that 
 
 * Open the Start Menu (i.e. press the ⊞ key).
 * Find/search for "Git Bash".
-* Right click it and select "**Run as administrator**".
+* ~~Right click it and select "**Run as administrator**".~~
+* Git-Repo.Win32 would elevate the UAC as adim inside the script automaticlly.
 
 This environment is only needed when running `repo`, or any specific `git`
 command that might involve symlinks (e.g. `pull` or `checkout`).
@@ -50,10 +52,10 @@ Python 3.6 or newer is required.
 
 Python 2.x is deprecated.
 
-You can download the latest Windows installer here:<br>
+You can download the latest Python3's Windows installer here:<br>
 https://www.python.org/downloads/release/python-3
 
-When installing, make sure the **[Python Laucher](https://www.python.org/dev/peps/pep-0397/)** is checked.
+When installing Python, make sure the **[Python Laucher](https://www.python.org/dev/peps/pep-0397/)** is checked.
 
 
 ## Git
@@ -61,7 +63,7 @@ When installing, make sure the **[Python Laucher](https://www.python.org/dev/pep
 You should install the most recent version of Git for Windows:<br>
 https://git-scm.com/download/win
 
-When installing, make sure to turn on **Enable symbolic links** when prompted.
+When installing Git, make sure to turn on **Enable symbolic links** when prompted.
 
 If you've already installed Git for Windows, you can simply download the latest
 installer from above and run it again.
@@ -112,6 +114,7 @@ $ repo upload --verify
 You will have to specify this flag every time you upload.
 
 [mintty](https://github.com/mintty/mintty/issues/56)
+
 
 ### repohooks always fail with an close_fds error.
 
