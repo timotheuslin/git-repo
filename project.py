@@ -377,9 +377,9 @@ class _LinkFile(object):
     self.src = src
     self.dest = dest
 
-  def __linkIt(self, relSrc, absDest):
+  def __linkIt(self, Src, absDest):
     # link file if it does not exist or is out of date
-    if not platform_utils.islink(absDest) or (platform_utils.readlink(absDest) != relSrc):
+    if not platform_utils.islink(absDest) or (platform_utils.readlink(absDest) != Src):
       try:
         # remove existing file first, since it might be read-only
         if os.path.lexists(absDest):
@@ -388,9 +388,9 @@ class _LinkFile(object):
           dest_dir = os.path.dirname(absDest)
           if not platform_utils.isdir(dest_dir):
             os.makedirs(dest_dir)
-        platform_utils.symlink(relSrc, absDest)
+        platform_utils.symlink(Src, absDest)
       except IOError:
-        _error('Cannot link file %s to %s', relSrc, absDest)
+        _error('Cannot link file %s to %s', Src, absDest)
 
   def _Link(self):
     """Link the self.src & self.dest paths.
@@ -410,8 +410,8 @@ class _LinkFile(object):
       dest = _SafeExpandPath(self.topdir, self.dest, skipfinal=True)
       # dest & src are absolute paths at this point.  Make sure the target of
       # the symlink is relative in the context of the repo client checkout.
-      relpath = os.path.relpath(src, os.path.dirname(dest))
-      self.__linkIt(relpath, dest)
+      #- relpath = os.path.relpath(src, os.path.dirname(dest))
+      self.__linkIt(src, dest)
     else:
       dest = _SafeExpandPath(self.topdir, self.dest)
       # Entity contains a wild card.
@@ -420,8 +420,8 @@ class _LinkFile(object):
       else:
         for absSrcFile in glob.glob(src):
           # Create a releative path from source dir to destination dir
-          absSrcDir = os.path.dirname(absSrcFile)
-          relSrcDir = os.path.relpath(absSrcDir, dest)
+          #- absSrcDir = os.path.dirname(absSrcFile)
+          #- relSrcDir = os.path.relpath(absSrcDir, dest)
 
           # Get the source file name
           srcFile = os.path.basename(absSrcFile)
@@ -429,8 +429,8 @@ class _LinkFile(object):
           # Now form the final full paths to srcFile. They will be
           # absolute for the desintaiton and relative for the srouce.
           absDest = os.path.join(dest, srcFile)
-          relSrc = os.path.join(relSrcDir, srcFile)
-          self.__linkIt(relSrc, absDest)
+          #-relSrc = os.path.join(relSrcDir, srcFile)
+          self.__linkIt(absSrcFile, absDest)
 
 
 class RemoteSpec(object):
@@ -2902,8 +2902,7 @@ class Project(object):
                   self.relpath, name)
         continue
       try:
-        platform_utils.symlink(
-            os.path.relpath(stock_hook, os.path.dirname(dst)), dst)
+        platform_utils.symlink(stock_hook, dst)
       except OSError as e:
         if e.errno == errno.EPERM:
           try:
@@ -2992,8 +2991,8 @@ class Project(object):
       # under the checkout .git/, recreate the symlink.
       if name in self.working_tree_dirs or name in self.working_tree_files:
         if os.path.exists(src_path) and not os.path.exists(dst_path):
-          platform_utils.symlink(
-              os.path.relpath(src_path, os.path.dirname(dst_path)), dst_path)
+          platform_utils.symlink(src_path, dst_path)
+              #- os.path.relpath(src_path, os.path.dirname(dst_path)), dst_path)
 
       dst = platform_utils.realpath(dst_path)
       if os.path.lexists(dst):
@@ -3043,8 +3042,8 @@ class Project(object):
           os.makedirs(src)
 
         if name in to_symlink:
-          platform_utils.symlink(
-              os.path.relpath(src, os.path.dirname(dst)), dst)
+          platform_utils.symlink(src, dst)
+              #- os.path.relpath(src, os.path.dirname(dst)), dst)
         elif copy_all and not platform_utils.islink(dst):
           if platform_utils.isdir(src):
             shutil.copytree(src, dst)
