@@ -77,7 +77,7 @@ class ShellExecuteInfo(ctypes.Structure):
         self.cbSize = ctypes.sizeof(self)
         for fieldName, fieldValue in kw.items():
             if sys.version[0] >= '3' and isinstance(fieldValue, str):
-                fieldValue = bytes(fieldValue, 'utf8', 'ignore')
+                fieldValue = bytes(fieldValue, 'utf-8', 'ignore')
             setattr(self, fieldName, fieldValue)
     def __repr__(self):
         ret = []
