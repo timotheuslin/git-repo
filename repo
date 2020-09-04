@@ -37,16 +37,23 @@ class Trace(object):
   """Trace helper logic."""
 
   REPO_TRACE = 'REPO_TRACE'
-
+    
   def __init__(self):
-    self.set(os.environ.get(self.REPO_TRACE) == '1')
+    self.REPO_TRACE_VAL = os.environ.get('REPO_TRACE', '')
+    self.enable(self.REPO_TRACE_VAL)
+    self.LOGFILE = self.REPO_TRACE_VAL if len(self.REPO_TRACE_VAL)>1 else ''
 
-  def set(self, value):
+  def enable(self, value):
     self.enabled = bool(value)
 
   def print(self, *args, **kwargs):
     if self.enabled:
-      print(*args, **kwargs)
+      if not self.LOGFILE:
+        print(*args, **kwargs)
+      else:
+        with open(self.LOGFILE, 'a+') as log:
+          print(args, **kwargs, file=log)
+          log.write('\n')
 
 
 trace = Trace()

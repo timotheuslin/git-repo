@@ -1,4 +1,6 @@
 '''
+Copyright (c) 2020 by Timothy lin, timothy.gh.lin@gmail.com
+
 Copyright (c) 2013 by JustAMan at GitHub
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,6 +29,8 @@ it will re-launch your script from the very beginning.
 
 import os
 import sys
+import time
+import base64
 import subprocess
 
 import ctypes
@@ -151,9 +155,14 @@ def elevateAdminRights(waitAndClose=True, reattachConsole=True):
     so you won't see any output of it.
     '''
     if not areAdminRightsElevated():
+        # prepare the non-admin's environment variables.
+        env_vars = [f"{k}={v}" for k, v in os.environ.items()]
+        env_var_strings = '\n'.join(env_vars).encode('ascii', errors='ignore')
+        env_var_strings = base64.b64encode(env_var_strings).decode('ascii')
+
         # this is host process that doesn't have administrative rights
         params = subprocess.list2cmdline([os.path.abspath(sys.argv[0])] + sys.argv[1:] +
-                                         [ELEVATE_MARKER])
+                                         [f"{ELEVATE_MARKER}={env_var_strings}"])
         executeInfo = ShellExecuteInfo(fMask=SEE_MASK_NOCLOSEPROCESS,
                                        hwnd=None,
                                        lpVerb='runas',
@@ -173,16 +182,25 @@ def elevateAdminRights(waitAndClose=True, reattachConsole=True):
         if waitAndClose:
             waitAndCloseHandle(executeInfo.hProcess)
             ctypes.windll.kernel32.GetExitCodeProcess(executeInfo.hProcess, ctypes.byref(exit_code))
-			# TODO: sys.exit(exit_code)
+            # TODO: sys.exit(exit_code)
             sys.exit(0)
         else:
             return executeInfo.hProcess
     else:
         # This is elevated process, either it is launched by host process or user manually
         # elevated the rights for this script. We check it by examining last parameter
-        if sys.argv[-1] == ELEVATE_MARKER:
+        #sys.argv += [f"{ELEVATE_MARKER}={env_var_strings}"]
+        if sys.argv[-1].startswith(ELEVATE_MARKER):
+            # propagate the environment variables from the non-admin space
+            envvars = sys.argv[-1][len(ELEVATE_MARKER)+1:].encode('ascii', errors='ignore')
+            envvars = base64.b64decode(envvars).decode('ascii', errors='ignore')
+            for k, v in [e.split('=') for e in envvars.split('\n')]:
+                #print(f'os.environ["{k}"] = {v}')
+                os.environ[k] = v
+
             # this is script-elevated process, remove the marker
             del sys.argv[-1]
+
             if reattachConsole:
                 # Now attach our elevated console to parent's console.
                 # first we free our own console

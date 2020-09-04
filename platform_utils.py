@@ -20,6 +20,7 @@ import platform
 import select
 import shutil
 import stat
+import repo_trace
 
 from pyversion import is_python3
 if is_python3():
@@ -204,7 +205,7 @@ def symlink(source, link_name):
     source = _validate_winpath(source)
     link_name = _validate_winpath(link_name)
     target = os.path.join(os.path.dirname(link_name), source)
-    print("debug: symlink()\n  source: %s\n  link_name: %s\n  target: %s" %
+    repo_trace.Trace("symlink()\n  source: %s\n  link_name: %s\n  target: %s\n" %
         (source, link_name, target))
     if isdir(target):
       platform_utils_win32.create_dirsymlink(_makelongpath(source), link_name)

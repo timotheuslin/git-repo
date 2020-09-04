@@ -26,7 +26,11 @@ import os
 # Env var to implicitly turn on tracing.
 REPO_TRACE = 'REPO_TRACE'
 
-_TRACE = os.environ.get(REPO_TRACE) == '1'
+REPO_TRACE_VAL = os.environ.get(REPO_TRACE, '')
+
+_TRACE = bool(REPO_TRACE_VAL)
+
+LOGFILE = REPO_TRACE_VAL if len(REPO_TRACE_VAL)>1 else ''
 
 
 def IsTrace():
@@ -40,4 +44,9 @@ def SetTrace():
 
 def Trace(fmt, *args):
   if IsTrace():
-    print(fmt % args, file=sys.stderr)
+    if not LOGFILE:
+      print(fmt % args, file=sys.stderr)
+    else:
+      with open(LOGFILE, 'a+') as log:
+        log.write(fmt % args)
+        log.write('\n')
